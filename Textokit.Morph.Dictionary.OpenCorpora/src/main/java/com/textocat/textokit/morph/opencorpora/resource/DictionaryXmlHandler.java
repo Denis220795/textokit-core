@@ -41,7 +41,7 @@ import java.util.Set;
 import static com.google.common.collect.Maps.newHashMapWithExpectedSize;
 import static com.google.common.collect.Sets.newHashSet;
 
-class DictionaryXmlHandler extends DefaultHandler {
+public class DictionaryXmlHandler extends DefaultHandler {
 
     private static final Logger log = LoggerFactory
             .getLogger(DictionaryXmlHandler.class);
@@ -608,7 +608,7 @@ class DictionaryXmlHandler extends DefaultHandler {
     private ElementHandler rootHandler;
     private Locator docLocator;
 
-    DictionaryXmlHandler(MorphDictionaryImpl dict) {
+    public DictionaryXmlHandler(MorphDictionaryImpl dict) {
         this.dict = dict;
     }
 
