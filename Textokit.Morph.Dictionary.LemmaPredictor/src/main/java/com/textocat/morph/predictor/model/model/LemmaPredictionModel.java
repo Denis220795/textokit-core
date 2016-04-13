@@ -1,6 +1,7 @@
 package com.textocat.morph.predictor.model.model;
 
 import com.textocat.morph.predictor.model.utils.Transformation;
+import com.textocat.morph.predictor.model.utils.comparators.CriteriaBasedComparator;
 import com.textocat.morph.predictor.model.utils.comparators.NumberBasedComparator;
 import com.textocat.morph.predictor.model.utils.comparators.PossibilityBasedComparator;
 import com.textocat.textokit.morph.fs.SimplyWord;
@@ -57,8 +58,11 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredcitionModel
                 }
             }
         }
-        possibleTransformations.sort(new PossibilityBasedComparator());
+        possibleTransformations.forEach(a -> {
+            a.setCriteria(a.getPossibility() * Math.getExponent(a.getNum()));
+        });
         if (possibleTransformations.size() != 0) {
+            possibleTransformations.sort(new CriteriaBasedComparator());
             return possibleTransformations.get(0);
         } else return null;
     }
@@ -81,15 +85,19 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredcitionModel
     }
 
     public ArrayList<Transformation> getAllPossibleTransformations(String word, String partOfSpeech) {
+        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         ArrayList<Transformation> transformations = model.get(partOfSpeech);
-        ArrayList<Transformation> result = new ArrayList<>();
         for (Transformation temp : transformations) {
-            if (word.contains(temp.getFrom())) {
-                result.add(temp);
+            if (temp.getFrom().length() < word.length()) {
+                if (word.substring(word.length() - temp.getFrom().length()).equals(temp.getFrom())) {
+                    possibleTransformations.add(temp);
+                }
             }
         }
-        result.sort(new PossibilityBasedComparator());
-        return result;
+        possibleTransformations.sort(new PossibilityBasedComparator());
+        if (possibleTransformations.size() != 0) {
+            return possibleTransformations;
+        } else return null;
     }
 
     public void sortTransformations(Comparator comparator) {

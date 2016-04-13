@@ -34,7 +34,7 @@ public class LemmaListener implements LemmaPostProcessor {
     public boolean process(MorphDictionary dict, Lemma.Builder lemmaBuilder, Multimap<String, Wordform> wfMap) {
         // лемма
         i++;
-        Transformation transformation;
+        Transformation transformation = null;
         String lemma = lemmaBuilder.build().getString();
         String partOfSpeech = dict.getGramModel().toGramSet(lemmaBuilder.getGrammems()).get(0);
         if (!model.containsKey(partOfSpeech)) {
@@ -58,27 +58,21 @@ public class LemmaListener implements LemmaPostProcessor {
                     from = s.replace(stemmer.stem(s), "");
                     to = lemma.replace(stemmer.stem(lemma), "");
                 }
+
+            if (!lemma.equals(s))
             transformation = new Transformation(from, to, partOfSpeech);
-            transformation.setSourceWord(s);
-            transformation.setTransformedWord(lemma);
-            ArrayList<Transformation> concreteEndings = model.get(partOfSpeech);
-            if (!concreteEndings.contains(transformation)) {
-                transformation.incrNum();
-                model.get(partOfSpeech).add(transformation);
-            } else {
-                model.get(partOfSpeech).get(model.get(partOfSpeech).indexOf(transformation)).incrNum();
+
+            if (transformation != null) {
+                transformation.setSourceWord(s);
+                transformation.setTransformedWord(lemma);
+                ArrayList<Transformation> concreteEndings = model.get(partOfSpeech);
+                if (!concreteEndings.contains(transformation)) {
+                    transformation.incrNum();
+                    model.get(partOfSpeech).add(transformation);
+                } else {
+                    model.get(partOfSpeech).get(model.get(partOfSpeech).indexOf(transformation)).incrNum();
+                }
             }
-//
-//            Collection<Wordform> ll = wfMap.asMap().get(s);
-//
-//            for (Wordform wordform : ll) {
-//                BitSet ww = wordform.getGrammems();
-//                System.out.println(s + "^GramSet^"+dict.getGramModel().toGramSet(ww)); // выводит падежи
-//                //System.out.println(">>>"+dict.getGramModel().toGramSet(gmPos));
-//                //System.out.println(">>>"+dict.getGramModel().toGramSet(lemmaBuilder.getGrammems()));
-//
-//                // и прочую инфу, не выводит часть речи
-//            }
         }
         if (i % 10000 == 0) {
             System.out.println("Processed " + i);

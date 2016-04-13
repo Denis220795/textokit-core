@@ -11,6 +11,7 @@ public class Transformation implements Serializable{
     private String from, to, type, sourceWord, transformedWord;
     private int num;
     private double possibility;
+    private double criteria;
 
     public Transformation(String from, String to, String type) {
         this.from = from;
@@ -90,6 +91,14 @@ public class Transformation implements Serializable{
     @Override
     public int hashCode() {
         return to.hashCode()+from.hashCode()+type.hashCode();
+    }
+
+    public double getCriteria() {
+        return criteria;
+    }
+
+    public void setCriteria(double criteria) {
+        this.criteria = criteria;
     }
 
     @Override
