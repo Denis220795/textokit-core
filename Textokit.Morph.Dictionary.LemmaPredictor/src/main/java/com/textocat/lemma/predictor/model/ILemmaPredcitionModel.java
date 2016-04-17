@@ -1,7 +1,4 @@
-package com.textocat.morph.predictor.model.model;
-
-import com.textocat.morph.predictor.model.utils.Transformation;
-import com.textocat.textokit.morph.fs.SimplyWord;
+package com.textocat.lemma.predictor.model;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -20,11 +17,11 @@ interface ILemmaPredcitionModel {
 
     void printModel();
 
-    Transformation getMostPossibleTransformation(String word, String partOfSpeech);
-
-    Transformation getMostPossibleTransformation(SimplyWord word);
-
-    ArrayList<Transformation> getAllPossibleTransformations(String word, String partOfSpeech);
+//    Transformation getMostPossibleTransformation(String word, String partOfSpeech);
+//
+//    Transformation getMostPossibleTransformation(SimplyWord word);
+//
+//    ArrayList<Transformation> getAllPossibleTransformations(String word, String partOfSpeech);
 
     void sortTransformations(Comparator comparator);
 

@@ -1,4 +1,4 @@
-package com.textocat.morph.predictor.model.utils;
+package com.textocat.lemma.predictor.model;
 
 import java.io.Serializable;
 

@@ -1,11 +1,11 @@
-package com.textocat.morph.predictor.model;
+package com.textocat.lemma.predictor.dictionary;
 
 import com.google.common.collect.Multimap;
-import com.textocat.morph.predictor.model.model.LemmaPredictionModel;
-import com.textocat.morph.predictor.model.utils.Transformation;
-import com.textocat.morph.predictor.model.utils.comparators.NumberBasedComparator;
-import com.textocat.morph.predictor.model.utils.comparators.PossibilityBasedComparator;
-import com.textocat.morph.predictor.model.utils.ioutils.IOModelUtil;
+import com.textocat.lemma.predictor.model.LemmaPredictionModel;
+import com.textocat.lemma.predictor.model.Transformation;
+import com.textocat.lemma.predictor.utils.comparators.NumberBasedComparator;
+import com.textocat.lemma.predictor.utils.comparators.PossibilityBasedComparator;
+import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
 import com.textocat.textokit.morph.dictionary.resource.MorphDictionary;
 import com.textocat.textokit.morph.model.Lemma;
 import com.textocat.textokit.morph.model.Wordform;

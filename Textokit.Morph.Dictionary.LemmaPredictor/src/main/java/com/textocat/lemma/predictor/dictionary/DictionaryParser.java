@@ -1,7 +1,6 @@
-package com.textocat.morph.predictor.model;
+package com.textocat.lemma.predictor.dictionary;
 
 import com.textocat.textokit.morph.opencorpora.resource.*;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 

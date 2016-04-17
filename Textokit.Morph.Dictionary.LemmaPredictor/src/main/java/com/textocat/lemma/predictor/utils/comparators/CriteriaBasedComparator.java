@@ -1,6 +1,6 @@
-package com.textocat.morph.predictor.model.utils.comparators;
+package com.textocat.lemma.predictor.utils.comparators;
 
-import com.textocat.morph.predictor.model.utils.Transformation;
+import com.textocat.lemma.predictor.model.Transformation;
 
 import java.util.Comparator;
 

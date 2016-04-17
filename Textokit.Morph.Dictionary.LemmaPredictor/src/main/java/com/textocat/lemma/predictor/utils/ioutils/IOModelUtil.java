@@ -1,6 +1,6 @@
-package com.textocat.morph.predictor.model.utils.ioutils;
+package com.textocat.lemma.predictor.utils.ioutils;
 
-import com.textocat.morph.predictor.model.model.LemmaPredictionModel;
+import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 
 import java.io.*;
 

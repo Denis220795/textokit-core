@@ -1,7 +1,8 @@
-import com.textocat.morph.predictor.model.model.LemmaPredictionModel;
-import com.textocat.morph.predictor.model.utils.ioutils.IOModelUtil;
+import com.textocat.lemma.predictor.model.LemmaPredictionModel;
+import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
+import com.textocat.lemma.predictor.model.Transformation;
+import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
 import com.textocat.textokit.morph.fs.SimplyWord;
-import com.textocat.textokit.segmentation.fstype.Sentence;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -10,6 +11,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -30,16 +32,32 @@ import java.util.Collection;
 
         @Override
         public void process(JCas jCas) throws AnalysisEngineProcessException {
-            System.out.println("Inside 1");
-            Collection<Sentence> sent = JCasUtil.select(jCas, Sentence.class);
-            sent.forEach(a -> System.out.println(a.getCoveredText()));
             Collection<SimplyWord> simplyWords = JCasUtil.select(jCas, SimplyWord.class);
-            final LemmaPredictionModel finalModel = model;
+
+            ArrayList<SimplyWord> lemmatizedWords = new ArrayList<>();
+
+            ArrayList<SimplyWord> testWords = new ArrayList<>();
+            final int[] i = {1};
+
             simplyWords.forEach(a -> {
-                System.out.println(a.getCoveredText()+" "+a.getPosTag());
-//                if (a.getLemma()==null) {
-//                    System.out.println(finalModel.getMostPossibleTransformation(a));
-//                }
+                if (i[0] % 2 == 0) {
+                    lemmatizedWords.add(a);
+                    i[0]++;
+                } else {
+                    testWords.add(a);
+                    i[0]++;
+                }
             });
+
+            for (int j = 0; j < lemmatizedWords.size(); j++) {
+                SimplyWord testedWord = testWords.get(j);
+                System.out.println(testedWord.getCoveredText() + " ^ ");
+                ArrayList<Transformation> transformations = ModelWordsExtractor.getAllPossibleTransformations(
+                        testWords.get(j), model);
+                transformations.forEach(a -> {
+                    System.out.println(" $ " + a.toString());
+                });
+
+            }
         }
     }

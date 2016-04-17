@@ -1,8 +1,8 @@
 package realtests;
 
-import com.textocat.morph.predictor.model.model.LemmaPredictionModel;
-import com.textocat.morph.predictor.model.utils.ioutils.IOModelUtil;
-import org.junit.Assert;
+import com.textocat.lemma.predictor.model.LemmaPredictionModel;
+import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
+import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -23,15 +23,21 @@ public class ModelPredictionTest {
     @Test
     public static void main(String[] args) throws IOException, ClassNotFoundException {
         LemmaPredictionModel model = IOModelUtil.readModel();
-        System.out.println(">>" + model.getMostPossibleTransformation("красивая", "ADJF").toString());
-        model.getAllPossibleTransformations("красивая", "ADJF").forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + model.getMostPossibleTransformation("человеком", "NOUN").toString());
-        model.getAllPossibleTransformations("человеком", "NOUN").forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + model.getMostPossibleTransformation("телеграмме", "NOUN").toString());
-        model.getAllPossibleTransformations("телеграмме", "NOUN").forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + model.getMostPossibleTransformation("смержили", "VERB").toString());
-        model.getAllPossibleTransformations("смержили", "VERB").forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + model.getMostPossibleTransformation("гастарбайтеров", "NOUN").toString());
-        model.getAllPossibleTransformations("гастарбайтеров", "NOUN").forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("красивая", "ADJF", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("красивая", "ADJF", model).forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("человеком", "NOUN", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("человеком", "NOUN", model).forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("телеграмме", "NOUN", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("телеграмме", "NOUN", model).forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("смержили", "VERB", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("смержили", "VERB", model).forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("гастарбайтеров", "NOUN", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("гастарбайтеров", "NOUN", model).forEach(a -> System.out.println(a.toString()));
+//        System.out.println(">>" + model.getMostPossibleTransformation("красиво", "ADVB").toString());
+//        model.getAllPossibleTransformations("красиво", "ADVB").forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергоресурсах", "NOUN", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("энергоресурсах", "NOUN", model).forEach(a -> System.out.println(a.toString()));
+        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергосzстеме", "NOUN", model).toString());
+        ModelWordsExtractor.getAllPossibleTransformations("энергосzстеме", "NOUN", model).forEach(a -> System.out.println(a.toString()));
     }
 }

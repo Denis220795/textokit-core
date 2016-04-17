@@ -1,4 +1,4 @@
-package com.textocat.morph.predictor.model;
+package com.textocat.lemma.predictor.dictionary;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
