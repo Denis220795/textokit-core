@@ -121,6 +121,8 @@ public class Transformation implements Serializable{
 
     @Override
     public String toString() {
-        return "Type: " + type + " " + from + " -> " + to + " Num: " + num + " Possibility: " + possibility;
+        return "Type: " + type + " " + from + " -> " + to
+                + " Num: " + num
+                + " Possibility: " + possibility;
     }
 }

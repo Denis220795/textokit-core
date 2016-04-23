@@ -5,7 +5,7 @@ import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.Transformation;
 import com.textocat.lemma.predictor.utils.comparators.NumberBasedComparator;
 import com.textocat.lemma.predictor.utils.comparators.PossibilityBasedComparator;
-import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
+import com.textocat.lemma.predictor.utils.io.IOModelUtil;
 import com.textocat.textokit.morph.dictionary.resource.MorphDictionary;
 import com.textocat.textokit.morph.model.Lemma;
 import com.textocat.textokit.morph.model.Wordform;
@@ -21,12 +21,12 @@ import java.util.*;
 public class LemmaListener implements LemmaPostProcessor {
 
     private int i;
-    SnowballStemmer stemmer;
-    LemmaPredictionModel lemmaPredictionModel;
+    private SnowballStemmer stemmer;
+    private LemmaPredictionModel lemmaPredictionModel;
     private HashMap<String, ArrayList<Transformation>> model;
 
     public LemmaListener() {
-        model = new HashMap();
+        model = new HashMap<>();
         lemmaPredictionModel = new LemmaPredictionModel();
         stemmer = new SnowballStemmer(SnowballStemmer.ALGORITHM.RUSSIAN);
     }
@@ -40,13 +40,13 @@ public class LemmaListener implements LemmaPostProcessor {
         if (!model.containsKey(partOfSpeech)) {
             model.put(partOfSpeech, new ArrayList<>());
         }
-        lemma.replaceAll("ё", "е");
+        lemma = lemma.replaceAll("ё", "е");
 
         for (String s : wfMap.asMap().keySet()) {
 //          s - формы леммы с разными окончаниями
-            String from = "";
-            String to = "";
-            s.replaceAll("ё", "е");
+            String from;
+            String to;
+            s = s.replaceAll("ё", "е");
             int i = 0;
             while (i<s.length() && i<lemma.length() && lemma.charAt(i)==s.charAt(i)) {
                 i++;

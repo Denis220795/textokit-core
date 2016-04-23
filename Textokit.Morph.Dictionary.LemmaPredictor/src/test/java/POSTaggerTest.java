@@ -2,6 +2,7 @@
 import com.textocat.textokit.commons.cpe.FileDirectoryCollectionReader;
 import com.textocat.textokit.commons.util.PipelineDescriptorUtils;
 import com.textocat.textokit.morph.commons.SimplyWordAnnotator;
+import com.textocat.textokit.morph.lemmatizer.LemmatizerAPI;
 import com.textocat.textokit.morph.opencorpora.resource.ClasspathMorphDictionaryResource;
 import com.textocat.textokit.postagger.PosTaggerAPI;
 import com.textocat.textokit.segmentation.SentenceSplitterAPI;
@@ -29,6 +30,8 @@ public class POSTaggerTest {
 
         AnalysisEngineDescription aeTokenizer = AnalysisEngineFactory.createEngineDescription(TokenizerAPI.AE_TOKENIZER);
 
+        AnalysisEngineDescription aeLemmaizer = AnalysisEngineFactory.createEngineDescription(LemmatizerAPI.AE_LEMMATIZER);
+
         AnalysisEngineDescription aeSimpWord = AnalysisEngineFactory.createEngineDescription(SimplyWordAnnotator.class);
 
         AnalysisEngineDescription aeSentS = AnalysisEngineFactory.createEngineDescription(SentenceSplitterAPI.AE_SENTENCE_SPLITTER);
@@ -37,7 +40,7 @@ public class POSTaggerTest {
 
         AnalysisEngineDescription posa = AnalysisEngineFactory.createEngineDescription(POSTaggerAnnotator.class);
 
-        AnalysisEngineDescription aeDesc = AnalysisEngineFactory.createEngineDescription(aeTokenizer, aeSentS, aePOSTagger, aeSimpWord, posa);
+        AnalysisEngineDescription aeDesc = AnalysisEngineFactory.createEngineDescription(aeTokenizer, aeSentS, aePOSTagger, aeLemmaizer, aeSimpWord, posa);
 
         ExternalResourceDescription morphDictDesc = ExternalResourceFactory.createExternalResourceDescription(ClasspathMorphDictionaryResource.class);
 

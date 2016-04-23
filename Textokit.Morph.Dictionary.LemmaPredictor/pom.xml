@@ -122,5 +122,14 @@
             <groupId>com.textocat.textokit.core</groupId>
             <artifactId>textokit-morph-dictionary-opencorpora</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.textocat.textokit.core</groupId>
+            <artifactId>textokit-lemmatizer-api</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.textocat.textokit.core</groupId>
+            <artifactId>textokit-lemmatizer-dictionary-sim</artifactId>
+        </dependency>
     </dependencies>
 </project>

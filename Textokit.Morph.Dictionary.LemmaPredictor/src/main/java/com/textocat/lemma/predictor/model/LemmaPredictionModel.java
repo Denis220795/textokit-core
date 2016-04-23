@@ -8,10 +8,10 @@ import java.util.HashMap;
 /**
  * Created by Денис on 02.04.2016.
  */
-public class LemmaPredictionModel implements Serializable, ILemmaPredcitionModel {
+public class LemmaPredictionModel implements Serializable, ILemmaPredictionModel {
     private static final long serialVersionUID = -2920304581672529098L;
 
-    public int id;
+    public transient int id;
 
     private HashMap<String, ArrayList<Transformation>> model;
 
@@ -47,20 +47,6 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredcitionModel
             model.get(partOfSpeech).sort(comparator);
     }
 
-    public void laplaceSmoothing() {
-        for (String s : model.keySet()) {
-            model.get(s).forEach(a ->
-            {
-                if (a.getPossibility() != 1)
-                    a.setPossibility(a.getPossibility() + 0.001);
-            });
-        }
-    }
-
-    public void goodTuringSmoothing() {
-
-    }
-
     public void buildPossibilities() {
         for (String partOfSpeech : model.keySet()) {
             ArrayList<Transformation> transformations = model.get(partOfSpeech);
@@ -73,7 +59,6 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredcitionModel
                     }
                 }
                 double possibility;
-                // округление до сотых
                 possibility = (double) transformation.getNum() / (double) total;
                 transformation.setPossibility(possibility);
             }

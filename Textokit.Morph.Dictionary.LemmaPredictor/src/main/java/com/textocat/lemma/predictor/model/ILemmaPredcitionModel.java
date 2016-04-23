@@ -7,7 +7,7 @@ import java.util.HashMap;
 /**
  * Created by Денис on 06.04.2016.
  */
-interface ILemmaPredcitionModel {
+interface ILemmaPredictionModel {
 
     HashMap<String, ArrayList<Transformation>> getModel();
 
@@ -17,17 +17,7 @@ interface ILemmaPredcitionModel {
 
     void printModel();
 
-//    Transformation getMostPossibleTransformation(String word, String partOfSpeech);
-//
-//    Transformation getMostPossibleTransformation(SimplyWord word);
-//
-//    ArrayList<Transformation> getAllPossibleTransformations(String word, String partOfSpeech);
-
     void sortTransformations(Comparator comparator);
-
-    void laplaceSmoothing();
-
-    void goodTuringSmoothing();
 
     void buildPossibilities();
 }

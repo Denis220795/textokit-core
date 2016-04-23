@@ -2,7 +2,7 @@ package realtests;
 
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
-import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
+import com.textocat.lemma.predictor.utils.io.IOModelUtil;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -33,8 +33,6 @@ public class ModelPredictionTest {
         ModelWordsExtractor.getAllPossibleTransformations("смержили", "VERB", model).forEach(a -> System.out.println(a.toString()));
         System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("гастарбайтеров", "NOUN", model).toString());
         ModelWordsExtractor.getAllPossibleTransformations("гастарбайтеров", "NOUN", model).forEach(a -> System.out.println(a.toString()));
-//        System.out.println(">>" + model.getMostPossibleTransformation("красиво", "ADVB").toString());
-//        model.getAllPossibleTransformations("красиво", "ADVB").forEach(a -> System.out.println(a.toString()));
         System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергоресурсах", "NOUN", model).toString());
         ModelWordsExtractor.getAllPossibleTransformations("энергоресурсах", "NOUN", model).forEach(a -> System.out.println(a.toString()));
         System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергосzстеме", "NOUN", model).toString());

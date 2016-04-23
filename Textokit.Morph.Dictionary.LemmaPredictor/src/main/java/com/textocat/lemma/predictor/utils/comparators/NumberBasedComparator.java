@@ -14,6 +14,7 @@ public class NumberBasedComparator implements Comparator {
         Transformation transformation2 = (Transformation) o2;
         if (!transformation1.equals(transformation2)) {
             int dif = transformation1.getNum() - transformation2.getNum();
+            //noinspection Duplicates
             if (dif == 0) return 0;
             else if (dif < 0) return 1;
             else return -1;

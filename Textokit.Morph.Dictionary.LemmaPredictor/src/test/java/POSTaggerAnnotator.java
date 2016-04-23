@@ -1,7 +1,7 @@
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
 import com.textocat.lemma.predictor.model.Transformation;
-import com.textocat.lemma.predictor.utils.ioutils.IOModelUtil;
+import com.textocat.lemma.predictor.utils.io.IOModelUtil;
 import com.textocat.textokit.morph.fs.SimplyWord;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
@@ -34,30 +34,11 @@ import java.util.Collection;
         public void process(JCas jCas) throws AnalysisEngineProcessException {
             Collection<SimplyWord> simplyWords = JCasUtil.select(jCas, SimplyWord.class);
 
-            ArrayList<SimplyWord> lemmatizedWords = new ArrayList<>();
-
-            ArrayList<SimplyWord> testWords = new ArrayList<>();
-            final int[] i = {1};
-
             simplyWords.forEach(a -> {
-                if (i[0] % 2 == 0) {
-                    lemmatizedWords.add(a);
-                    i[0]++;
-                } else {
-                    testWords.add(a);
-                    i[0]++;
+                if (a.getLemma() == null) {
+                    System.out.println(a.getCoveredText() + " -> " + ModelWordsExtractor.getMostPossibleTransformation(a,
+                            model));
                 }
             });
-
-            for (int j = 0; j < lemmatizedWords.size(); j++) {
-                SimplyWord testedWord = testWords.get(j);
-                System.out.println(testedWord.getCoveredText() + " ^ ");
-                ArrayList<Transformation> transformations = ModelWordsExtractor.getAllPossibleTransformations(
-                        testWords.get(j), model);
-                transformations.forEach(a -> {
-                    System.out.println(" $ " + a.toString());
-                });
-
-            }
         }
     }

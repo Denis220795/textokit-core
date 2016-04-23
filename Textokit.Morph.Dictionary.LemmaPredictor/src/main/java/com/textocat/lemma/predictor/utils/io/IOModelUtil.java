@@ -1,4 +1,4 @@
-package com.textocat.lemma.predictor.utils.ioutils;
+package com.textocat.lemma.predictor.utils.io;
 
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 
