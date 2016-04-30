@@ -19,31 +19,11 @@ public class ModelWordsExtractor {
     private ModelWordsExtractor() {
     }
 
-    public static Transformation getMostPossibleTransformation(String word, String partOfSpeech, LemmaPredictionModel lpmodel) {
+    // возвращает самое длинное вероятное преобразование для слова - точность выше
+    public static Transformation getMostPossibleLongestTransformation(SimplyWord word, LemmaPredictionModel lpmodel) {
         ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
-        ArrayList<Transformation> transformations = model.get(partOfSpeech);
-        for (Transformation temp : transformations) {
-            if (temp.getFrom().length() < word.length() & !temp.getFrom().equals("")) {
-                if (word.substring(word.length() - temp.getFrom().length()).equals(temp.getFrom())) {
-                    possibleTransformations.add(temp);
-                }
-            }
-        }
-        possibleTransformations.forEach(a -> {
-            a.setCriteria(a.getPossibility() * Math.getExponent(a.getNum()));
-        });
-        if (possibleTransformations.size() != 0) {
-            possibleTransformations.sort(new CriteriaBasedComparator());
-            return possibleTransformations.get(0);
-        } else return null;
-    }
-
-    // выдаём самое длинное вероятное преобразование
-    public static Transformation getMostPossibleTransformation(SimplyWord word, LemmaPredictionModel lpmodel) {
-        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
-        HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
-        ArrayList<Transformation> transformations = null;
+        ArrayList<Transformation> transformations;
         if (word.getGrammems() == null)
             return null;
         transformations = model.get(word.getGrammems(0));
@@ -56,14 +36,12 @@ public class ModelWordsExtractor {
                 }
             }
         }
+        // сглаживание
         possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.log(a.getNum())));
-
         if (possibleTransformations.size() != 0) {
             possibleTransformations.sort(new LengthBasedComparator());
         }
-
         ArrayList<Transformation> mostLengthTrans = new ArrayList<>();
-
         for (Transformation tr : possibleTransformations) {
             if (mostLengthTrans.size() == 0) mostLengthTrans.add(tr);
             else {
@@ -71,36 +49,56 @@ public class ModelWordsExtractor {
                     mostLengthTrans.add(tr);
             }
         }
-
         mostLengthTrans.sort(new CriteriaBasedComparator());
         if (mostLengthTrans.size() != 0)
             return mostLengthTrans.get(0);
         else return null;
     }
 
-    // выдаём наиболее вероятное преобразование вне зависимости от длины
-//    public static Transformation getMostPossibleTransformation(SimplyWord word, LemmaPredictionModel lpmodel) {
-//        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
-//        HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
-//        ArrayList<Transformation> transformations = model.get(word.getGrammems(0));
-//        String text = word.getCoveredText();
-//        for (Transformation temp : transformations) {
-//            if (temp.getFrom().length() < text.length() && temp.getFrom().length() != 0) {
-//                if (text.substring(text.length() - temp.getFrom().length()).equals(temp.getFrom())) {
-//                    possibleTransformations.add(temp);
-//                }
-//            }
-//        }
-//        possibleTransformations.forEach(a -> {
-//            a.setCriteria(a.getPossibility() * Math.log(a.getNum()));
-//        });
-//        possibleTransformations.sort(new CriteriaBasedComparator());
-//        if (possibleTransformations.size() != 0) {
-//            return possibleTransformations.get(0);
-//        } else return null;
-//    }
+    // возвращает наиболее вероятное преобразование вне зависимости от длины для слова - точность меньше
+    public static Transformation getMostPossibleTransformation(SimplyWord word, LemmaPredictionModel lpmodel) {
+        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
+        HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
+        if (word.getGrammems() == null) return null;
+        ArrayList<Transformation> transformations = model.get(word.getGrammems(0));
+        String text = word.getCoveredText();
+        if (transformations == null) return null;
+        for (Transformation temp : transformations) {
+            if (temp.getFrom().length() < text.length() && temp.getFrom().length() != 0) {
+                if (text.substring(text.length() - temp.getFrom().length()).equals(temp.getFrom())) {
+                    possibleTransformations.add(temp);
+                }
+            }
+        }
+        // сглаживание
+        possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.log(a.getNum())));
+        possibleTransformations.sort(new CriteriaBasedComparator());
+        if (possibleTransformations.size() != 0) {
+            return possibleTransformations.get(0);
+        } else return null;
+    }
 
-    // выдаём все вероятные преобразования для слова
+    // возвращает наиболее вероятное преобразование вне зависимости от длины для слова
+    public static Transformation getMostPossibleTransformation(String word, String partOfSpeech, LemmaPredictionModel lpmodel) {
+        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
+        HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
+        ArrayList<Transformation> transformations = model.get(partOfSpeech);
+        for (Transformation temp : transformations) {
+            if (temp.getFrom().length() < word.length() & !temp.getFrom().equals("")) {
+                if (word.substring(word.length() - temp.getFrom().length()).equals(temp.getFrom())) {
+                    possibleTransformations.add(temp);
+                }
+            }
+        }
+        // сглаживание
+        possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.getExponent(a.getNum())));
+        if (possibleTransformations.size() != 0) {
+            possibleTransformations.sort(new CriteriaBasedComparator());
+            return possibleTransformations.get(0);
+        } else return null;
+    }
+
+    // возвращает все вероятные преобразования для слова
     public static ArrayList<Transformation> getAllPossibleTransformations(String word, String partOfSpeech, LemmaPredictionModel lpmodel) {
         ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
@@ -118,6 +116,7 @@ public class ModelWordsExtractor {
         } else return null;
     }
 
+    // возвращает все вероятные преобразования для слова
     public static ArrayList<Transformation> getAllPossibleTransformations(SimplyWord simplyWord, LemmaPredictionModel lpmodel) {
         ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
@@ -131,7 +130,8 @@ public class ModelWordsExtractor {
         } else return null;
     }
 
-    public static void printLeastPossibleWords(LemmaPredictionModel lpmodel) {
+    // печатает слова и преобразования с очень малой вероятностьью
+    public static void printLeastPossibleTransformations(LemmaPredictionModel lpmodel) {
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
         for (String s : model.keySet()) {
             model.get(s).forEach(a -> {

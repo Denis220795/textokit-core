@@ -5,7 +5,7 @@ import java.io.Serializable;
 /**
  * Created by Денис on 24.02.2016.
  */
-public class Transformation implements Serializable{
+public class Transformation implements Serializable {
     private static final long serialVersionUID = 5227824473238329563L;
 
     private String from, to, type, sourceWord, transformedWord;
@@ -48,7 +48,7 @@ public class Transformation implements Serializable{
         this.num = num;
     }
 
-    public void incrNum () {
+    public void incrNum() {
         this.num++;
     }
 
@@ -88,11 +88,6 @@ public class Transformation implements Serializable{
         this.transformedWord = transformedWord;
     }
 
-    @Override
-    public int hashCode() {
-        return to.hashCode()+from.hashCode()+type.hashCode();
-    }
-
     public double getCriteria() {
         return criteria;
     }
@@ -102,17 +97,19 @@ public class Transformation implements Serializable{
     }
 
     @Override
+    public int hashCode() {
+        return to.hashCode() + from.hashCode() + type.hashCode();
+    }
+
+    @Override
     public boolean equals(Object obj) {
-        if(obj == null)
-        {
+        if (obj == null) {
             return false;
         }
-        if (obj == this)
-        {
+        if (obj == this) {
             return true;
         }
-        if (getClass() != obj.getClass())
-        {
+        if (getClass() != obj.getClass()) {
             return false;
         }
         Transformation ending = (Transformation) obj;

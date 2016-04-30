@@ -1,6 +1,5 @@
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
-import com.textocat.lemma.predictor.model.Transformation;
 import com.textocat.lemma.predictor.utils.io.IOModelUtil;
 import com.textocat.textokit.morph.fs.SimplyWord;
 import org.apache.uima.UimaContext;
@@ -11,7 +10,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -33,7 +31,6 @@ import java.util.Collection;
         @Override
         public void process(JCas jCas) throws AnalysisEngineProcessException {
             Collection<SimplyWord> simplyWords = JCasUtil.select(jCas, SimplyWord.class);
-
             simplyWords.forEach(a -> {
                 if (a.getLemma() == null) {
                     System.out.println(a.getCoveredText() + " -> " + ModelWordsExtractor.getMostPossibleTransformation(a,
