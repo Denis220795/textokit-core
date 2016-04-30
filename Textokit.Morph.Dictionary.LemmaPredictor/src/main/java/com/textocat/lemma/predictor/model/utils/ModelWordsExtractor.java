@@ -83,6 +83,7 @@ public class ModelWordsExtractor {
         ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
         ArrayList<Transformation> transformations = model.get(partOfSpeech);
+        if (transformations == null) return null;
         for (Transformation temp : transformations) {
             if (temp.getFrom().length() < word.length() & !temp.getFrom().equals("")) {
                 if (word.substring(word.length() - temp.getFrom().length()).equals(temp.getFrom())) {
@@ -91,7 +92,7 @@ public class ModelWordsExtractor {
             }
         }
         // сглаживание
-        possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.getExponent(a.getNum())));
+        possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.log(a.getNum())));
         if (possibleTransformations.size() != 0) {
             possibleTransformations.sort(new CriteriaBasedComparator());
             return possibleTransformations.get(0);

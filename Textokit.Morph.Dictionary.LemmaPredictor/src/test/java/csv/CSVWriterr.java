@@ -2,7 +2,6 @@ package csv;
 
 import com.textocat.lemma.predictor.utils.csv.CSVWriter;
 import com.textocat.lemma.predictor.utils.csv.raw.StatisticalRecord;
-import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVFormat;
 
 import java.io.*;
