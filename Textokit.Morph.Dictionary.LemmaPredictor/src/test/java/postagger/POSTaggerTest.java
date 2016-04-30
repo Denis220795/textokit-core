@@ -1,3 +1,4 @@
+package postagger;
 
 import com.textocat.textokit.commons.cpe.FileDirectoryCollectionReader;
 import com.textocat.textokit.commons.util.PipelineDescriptorUtils;

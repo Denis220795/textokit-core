@@ -15,10 +15,6 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredictionModel
 
     private HashMap<String, ArrayList<Transformation>> model;
 
-    public LemmaPredictionModel(HashMap<String, ArrayList<Transformation>> model) {
-        this.model = model;
-    }
-
     public LemmaPredictionModel() {
     }
 

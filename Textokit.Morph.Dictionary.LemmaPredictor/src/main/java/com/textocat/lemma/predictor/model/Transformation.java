@@ -19,15 +19,6 @@ public class Transformation implements Serializable {
         this.type = type;
     }
 
-    public Transformation(String from, String to) {
-        this.from = from;
-        this.to = to;
-        this.type = "UNKNOWN";
-    }
-
-    public Transformation() {
-    }
-
     public String getFrom() {
         return from;
     }

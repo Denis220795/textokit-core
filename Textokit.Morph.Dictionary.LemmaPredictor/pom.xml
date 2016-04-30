@@ -131,5 +131,16 @@
             <groupId>com.textocat.textokit.core</groupId>
             <artifactId>textokit-lemmatizer-dictionary-sim</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+            <version>1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.hsqldb</groupId>
+            <artifactId>hsqldb</artifactId>
+            <version>2.2.9</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

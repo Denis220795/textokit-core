@@ -1,3 +1,5 @@
+package postagger;
+
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
 import com.textocat.lemma.predictor.utils.io.IOModelUtil;
