@@ -12,6 +12,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Collection;
 
 /**
@@ -27,8 +28,10 @@ import java.util.Collection;
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
         }
-        }
+    }
 
         @Override
         public void process(JCas jCas) throws AnalysisEngineProcessException {

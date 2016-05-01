@@ -7,6 +7,7 @@ package com.textocat.lemma.predictor.utils.csv;
 import com.textocat.lemma.predictor.utils.csv.raw.StatisticalRecord;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.QuoteMode;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -15,12 +16,14 @@ import java.util.List;
 
 public class CSVWriter {
 
+    CSVPrinter printer;
+    CSVFormat csvFormat;
+
     public CSVWriter() {
     }
 
-    public void writeToCSV(String[] header, Collection<StatisticalRecord> records, File file) throws IOException {
-        CSVFormat csvFormat = CSVFormat.EXCEL.withHeader(header);
-        CSVPrinter printer = null;
+    public void writeToCSV(String[] header, Collection<StatisticalRecord> records, File file, Double accuracy) throws IOException {
+        csvFormat = CSVFormat.EXCEL.withHeader(header).withDelimiter(',').withEscape('"').withQuoteMode(QuoteMode.NONE);
         try {
             printer = new CSVPrinter(new FileWriter(file), csvFormat);
         } catch (IOException e) {
@@ -37,6 +40,11 @@ public class CSVWriter {
             printer.flush();
             raws.clear();
         }
+        printer.println();
+        accuracy = accuracy * 100;
+        printer.print("Accuracy: " + accuracy.toString() + " %");
         printer.close();
     }
+
+
 }

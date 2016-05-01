@@ -27,8 +27,10 @@ public class CSVWriterr {
 
         File f = new File("result.csv");
 
+        Double accuracy = 100.0;
+
         CSVWriter writer = new CSVWriter();
 
-        writer.writeToCSV(header, statisticalRecords, f);
+        writer.writeToCSV(header, statisticalRecords, f, accuracy);
     }
 }

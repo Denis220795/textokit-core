@@ -19,7 +19,41 @@ public class ModelWordsExtractor {
     private ModelWordsExtractor() {
     }
 
-    // возвращает самое длинное вероятное преобразование для слова - точность выше
+    // возвращает самое длинное вероятное преобразование для слова
+    public static Transformation getMostPossibleLongestTransformation(String word, String partOfSpeech, LemmaPredictionModel lpmodel) {
+        ArrayList<Transformation> possibleTransformations = new ArrayList<>();
+        HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();
+        ArrayList<Transformation> transformations;
+        transformations = model.get(partOfSpeech);
+        if (transformations == null) return null;
+        String text = word;
+        for (Transformation temp : transformations) {
+            if (temp.getFrom().length() < text.length() && temp.getFrom().length() != 0) {
+                if (text.substring(text.length() - temp.getFrom().length()).equals(temp.getFrom())) {
+                    possibleTransformations.add(temp);
+                }
+            }
+        }
+        // сглаживание
+        possibleTransformations.forEach(a -> a.setCriteria(a.getPossibility() * Math.log(a.getNum())));
+        if (possibleTransformations.size() != 0) {
+            possibleTransformations.sort(new LengthBasedComparator());
+        }
+        ArrayList<Transformation> mostLengthTrans = new ArrayList<>();
+        for (Transformation tr : possibleTransformations) {
+            if (mostLengthTrans.size() == 0) mostLengthTrans.add(tr);
+            else {
+                if (tr.getFrom().length() >= mostLengthTrans.get(0).getFrom().length())
+                    mostLengthTrans.add(tr);
+            }
+        }
+        mostLengthTrans.sort(new CriteriaBasedComparator());
+        if (mostLengthTrans.size() != 0)
+            return mostLengthTrans.get(0);
+        else return null;
+    }
+
+    // возвращает самое длинное вероятное преобразование для слова
     public static Transformation getMostPossibleLongestTransformation(SimplyWord word, LemmaPredictionModel lpmodel) {
         ArrayList<Transformation> possibleTransformations = new ArrayList<>();
         HashMap<String, ArrayList<Transformation>> model = lpmodel.getModel();

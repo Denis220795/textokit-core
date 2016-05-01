@@ -1,41 +1,71 @@
 package realtests;
 
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
+import com.textocat.lemma.predictor.model.Transformation;
 import com.textocat.lemma.predictor.model.utils.ModelWordsExtractor;
+import com.textocat.lemma.predictor.model.utils.WordsTransformationUtil;
+import com.textocat.lemma.predictor.utils.csv.CSVWriter;
+import com.textocat.lemma.predictor.utils.csv.raw.StatisticalRecord;
 import com.textocat.lemma.predictor.utils.io.IOModelUtil;
+import com.textocat.lemma.predictor.utils.io.SystemResources;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * Created by Денис on 08.04.2016.
  */
 public class ModelPredictionTest {
-    ArrayList<String> originalWords;
-    ArrayList<String> correctWords;
+    ArrayList<String[]> records;
 
     public ModelPredictionTest() {
-        originalWords = new ArrayList<>();
-        correctWords = new ArrayList<>();
+        records = new ArrayList<>();
     }
 
     @Test
-    public static void main(String[] args) throws IOException, ClassNotFoundException {
+    public static void main(String[] args) throws IOException, ClassNotFoundException, URISyntaxException {
+        System.out.println("Initializing LemmaPredictionModel from source: "
+                + SystemResources.resourcePath() + "models/model-stem-based.ser ...");
         LemmaPredictionModel model = IOModelUtil.readModel();
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("красивая", "ADJF", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("красивая", "ADJF", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("человеком", "NOUN", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("человеком", "NOUN", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("телеграмме", "NOUN", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("телеграмме", "NOUN", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("смержили", "VERB", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("смержили", "VERB", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("гастарбайтеров", "NOUN", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("гастарбайтеров", "NOUN", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергоресурсах", "NOUN", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("энергоресурсах", "NOUN", model).forEach(a -> System.out.println(a.toString()));
-        System.out.println(">>" + ModelWordsExtractor.getMostPossibleTransformation("энергосzстеме", "NOUN", model).toString());
-        ModelWordsExtractor.getAllPossibleTransformations("энергосzстеме", "NOUN", model).forEach(a -> System.out.println(a.toString()));
+        Scanner s = new Scanner(new File(SystemResources.resourcePath() + "test-for-lpm.txt"));
+        String sourceWord, goldWord, predictedWord = "", status, posTag;
+        int total = 0, correct = 0;
+        double accuracy;
+        Transformation transformation;
+        ArrayList<StatisticalRecord> records = new ArrayList<>();
+        StatisticalRecord record;
+        while (s.hasNext()) {
+            sourceWord = s.next();
+            posTag = s.next();
+            goldWord = s.next();
+            transformation = ModelWordsExtractor.getMostPossibleTransformation(sourceWord, posTag, model);
+            predictedWord = WordsTransformationUtil.getTransformedWord(transformation, sourceWord);
+            if (predictedWord.equals(goldWord)) {
+                correct++;
+                status = "true";
+            } else {
+                status = "false";
+            }
+            total++;
+            System.out.println("Sorce word: " + sourceWord);
+            System.out.println("Gold word: " + goldWord);
+            System.out.println("Predicted word: " + predictedWord);
+            System.out.println("Status: " + status);
+            System.out.println("-------------------------");
+            record = new StatisticalRecord(sourceWord, goldWord, predictedWord, status);
+            records.add(record);
+        }
+        accuracy = (double) correct / (double) total;
+        System.out.println("Accuracy: " + accuracy);
+        s.close();
+        CSVWriter writer = new CSVWriter();
+        String[] header = {"Wordform", "Gold", "Predicted", "Status"};
+        File file = new File(SystemResources.resourcePath() + "results/result.csv");
+        System.out.println("Writing results to file: " + file.getPath());
+        writer.writeToCSV(header, records, file, accuracy);
     }
 }
