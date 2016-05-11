@@ -1,4 +1,4 @@
-package realtests;
+package model;
 
 import com.textocat.lemma.predictor.model.LemmaPredictionModel;
 import com.textocat.lemma.predictor.model.Transformation;
@@ -29,9 +29,11 @@ public class ModelPredictionTest {
 
     @Test
     public static void main(String[] args) throws IOException, ClassNotFoundException, URISyntaxException {
+
         System.out.println("Initializing LemmaPredictionModel from source: "
                 + SystemResources.resourcePath() + "models/model-stem-based.ser ...");
         LemmaPredictionModel model = IOModelUtil.readModel();
+        System.out.println("Initialization finished successfully");
         Scanner s = new Scanner(new File(SystemResources.resourcePath() + "test-for-lpm.txt"));
         String sourceWord, goldWord, predictedWord, status, posTag;
         int total = 0, correct = 0;
@@ -45,6 +47,7 @@ public class ModelPredictionTest {
             goldWord = s.next();
             transformation = ModelWordsExtractor.getMostPossibleTransformation(sourceWord, posTag, model);
             predictedWord = WordsTransformationUtil.getTransformedWord(transformation, sourceWord);
+            assert predictedWord != null;
             if (predictedWord.equals(goldWord)) {
                 correct++;
                 status = "true";

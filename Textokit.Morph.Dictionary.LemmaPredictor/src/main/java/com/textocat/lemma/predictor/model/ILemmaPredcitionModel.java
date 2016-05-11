@@ -13,8 +13,6 @@ interface ILemmaPredictionModel {
 
     void setModel(HashMap<String, ArrayList<Transformation>> model);
 
-    ArrayList<Transformation> getAllTransformationsFor(String partOfSpeech);
-
     void printModel();
 
     void sortTransformations(Comparator comparator);

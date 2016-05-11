@@ -26,15 +26,9 @@ public class LemmaPredictionModel implements Serializable, ILemmaPredictionModel
         this.model = model;
     }
 
-    public ArrayList<Transformation> getAllTransformationsFor(String partOfSpeech) {
-        return model.get(partOfSpeech);
-    }
-
     public void printModel() {
         for (String s : model.keySet()) {
-            model.get(s).forEach(a -> {
-                System.out.println(a.toString());
-            });
+            model.get(s).forEach(a -> System.out.println(a.toString()));
         }
     }
 

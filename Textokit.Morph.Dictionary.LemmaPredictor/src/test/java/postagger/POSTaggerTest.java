@@ -15,6 +15,7 @@ import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.fit.factory.ExternalResourceFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.resource.ExternalResourceDescription;
+import org.junit.Test;
 
 
 import java.io.File;
@@ -24,6 +25,7 @@ import java.io.IOException;
  * Created by Денис on 07.04.2016.
  */
 public class POSTaggerTest {
+    @Test
     public static void main(String[] args) throws UIMAException, IOException, ClassNotFoundException {
         String inputDirPath = args[0];
         File inputF = new File(inputDirPath);

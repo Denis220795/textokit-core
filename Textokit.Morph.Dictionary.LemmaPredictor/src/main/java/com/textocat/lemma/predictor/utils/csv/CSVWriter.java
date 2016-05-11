@@ -23,6 +23,13 @@ public class CSVWriter {
     public void writeToCSV(String[] header, Collection<IRecord> records, File file, Double accuracy) throws IOException {
         csvFormat = CSVFormat.EXCEL.withHeader(header).withDelimiter(',').withEscape('"').withQuoteMode(QuoteMode.NONE);
         try {
+            for (IRecord record : records) {
+                String[] values = record.getValues();
+                if (values.length != header.length) {
+                    System.err.print("Number of attributes in one or more records is not equal to header attrbutes values!");
+                    System.exit(1);
+                }
+            }
             printer = new CSVPrinter(new FileWriter(file), csvFormat);
         } catch (IOException e) {
             e.printStackTrace();
@@ -30,11 +37,6 @@ public class CSVWriter {
         List<String> raws = new ArrayList<>();
         for (IRecord record : records) {
             String[] values = record.getValues();
-            if (values.length != header.length) {
-                System.err.print("Number of attributes in record is not equal to header attrbutes values!");
-                System.exit(1);
-                return;
-            }
             Collections.addAll(raws, values);
             printer.printRecord(raws);
             printer.flush();
