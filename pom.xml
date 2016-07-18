@@ -79,5 +79,7 @@
         <module>Textokit.DictionaryMatcher.Tools</module>
         <module>Textokit.Corpus.Statistics</module>
         <module>Textokit.Morph.Dictionary.LemmaPredictor</module>
+        <module>Textokit.EntityParser</module>
+        <module>FactRuEvalPractice</module>
     </modules>
 </project>
