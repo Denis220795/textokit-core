@@ -20,13 +20,30 @@ public class CharacteristicVector {
     private String affixL1;
     private String affixL2;
     private String affixL3;
+    private String label;
+    private int length;
     List<SimplyWord> left1Token;
     List<SimplyWord> left2Tokens;
     List<SimplyWord> left3Tokens;
     List<SimplyWord> right1Token;
     List<SimplyWord> right2Tokens;
     List<SimplyWord> right3Tokens;
-    ;
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public int getLength() {
+        return length;
+    }
+
+    public void setLength(int length) {
+        this.length = length;
+    }
 
     public String getCoveredText() {
         return coveredText;
@@ -158,16 +175,18 @@ public class CharacteristicVector {
 
     @Override
     public String toString() {
-        return coveredText + "," + lemma + "," + posTag + "," + position + "," +
+        return "'" + coveredText + "'" + "," + "'" + lemma + "'" + "," + "'" + posTag + "'" + "," + position + "," +
                 suffixL1 + "," + suffixL2 + "," + suffixL3 + "," + affixL1 + "," + affixL2 + "," + affixL3 + "," +
-                mkStringFromList(left1Token) + "," + mkStringFromList(left2Tokens) + ","
-                + mkStringFromList(left3Tokens) + "," + mkStringFromList(right1Token) + ","
-                + mkStringFromList(right2Tokens) + "," + mkStringFromList(right3Tokens);
+                "'" + mkStringFromList(left1Token) + "'" + "," + "'" + mkStringFromList(left2Tokens) + "'" + ","
+                + "'" + mkStringFromList(left3Tokens) + "'" + "," + "'" + mkStringFromList(right1Token) + "'" + ","
+                + "'" + mkStringFromList(right2Tokens) + "'" + "," + "'" + mkStringFromList(right3Tokens) + "'" + ","
+                + length + "," + label;
     }
 
     private String mkStringFromList(List<SimplyWord> words) {
-        final String[] result = {""};
-        words.forEach(a -> result[0] += a.getCoveredText() + " ");
-        return result[0];
+        String result = "";
+        for (SimplyWord sw : words)
+            result += sw.getCoveredText() + " ";
+        return result;
     }
 }

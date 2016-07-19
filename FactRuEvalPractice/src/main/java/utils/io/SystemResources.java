@@ -5,10 +5,10 @@ package utils.io;
  */
 public class SystemResources {
     public static String resourcePath() {
-        return System.getProperty("user.dir") + "/src/main/resources/";
+        return System.getProperty("user.dir") + "/FactRuEvalPractice/src/main/resources/";
     }
 
     public static String sourcePath() {
-        return System.getProperty("user.dir") + "/src/main/java/";
+        return System.getProperty("user.dir") + "/FactRuEvalPractice/src/main/java/";
     }
 }

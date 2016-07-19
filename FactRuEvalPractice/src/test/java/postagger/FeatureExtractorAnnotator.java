@@ -9,7 +9,10 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import utils.io.SystemResources;
 
+import java.io.*;
+import java.nio.charset.Charset;
 import java.util.*;
 
 /**
@@ -17,8 +20,9 @@ import java.util.*;
  */
 public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
 
-    private Collection<CharacteristicVector> vectors;
+    private Collection<String> vectors;
     int pos;
+    int length;
     String text;
     String lemma;
     String posTag;
@@ -28,47 +32,92 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     String affixL1;
     String affixL2;
     String affixL3;
+    String label;
     List<SimplyWord> left1Token;
     List<SimplyWord> left2Tokens;
     List<SimplyWord> left3Tokens;
     List<SimplyWord> right1Token;
     List<SimplyWord> right2Tokens;
     List<SimplyWord> right3Tokens;
+    File textDirectory;
+    File spanDirectory;
+    private int numOfDocs = 0;
+
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         vectors = new ArrayList<>();
+        textDirectory = new File(SystemResources.resourcePath() + "/texts/");
+        spanDirectory = new File(SystemResources.resourcePath() + "/objects/");
+    }
 
+    @Override
+    public void collectionProcessComplete() throws AnalysisEngineProcessException {
+        File file = new File("D:\\vectors.txt");
+        BufferedWriter writer = null;
+        try {
+            writer = new BufferedWriter(
+                    new OutputStreamWriter(
+                            new FileOutputStream(file), Charset.forName("UTF-8")));
+            BufferedWriter finalWriter = writer;
+            vectors.forEach(a -> {
+                try {
+                    finalWriter.write(a.toString());
+                    finalWriter.newLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+//        showAllVectors();
     }
 
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
-        Collection<Sentence> sents = JCasUtil.select(jCas, Sentence.class);
-        for (Sentence s : sents) {
-            final int[] position = {0};
-            Collection<SimplyWord> simplyWords = JCasUtil.selectCovered(SimplyWord.class, s);
-            simplyWords.forEach(a -> {
-                position[0]++;
-                pos = position[0];
-                text = a.getCoveredText();
-                lemma = a.getLemma();
-                posTag = a.getPosTag();
-                suffixL1 = getSuffixWithLength(1, a.getCoveredText());
-                suffixL2 = getSuffixWithLength(2, a.getCoveredText());
-                suffixL3 = getSuffixWithLength(3, a.getCoveredText());
-                affixL1 = getAffixWithLength(1, a.getCoveredText());
-                affixL2 = getAffixWithLength(2, a.getCoveredText());
-                affixL3 = getAffixWithLength(3, a.getCoveredText());
-                left1Token = getKNearestNeighbourWords(simplyWords, a, 1, "<-");
-                left2Tokens = getKNearestNeighbourWords(simplyWords, a, 2, "<-");
-                left3Tokens = getKNearestNeighbourWords(simplyWords, a, 3, "<-");
-                right1Token = getKNearestNeighbourWords(simplyWords, a, 1, "->");
-                right2Tokens = getKNearestNeighbourWords(simplyWords, a, 2, "->");
-                right3Tokens = getKNearestNeighbourWords(simplyWords, a, 3, "->");
-                zipToVector();
-            });
-            position[0] = 0;
+        String spanFileName = getFileName(jCas.getDocumentText());
+        if (spanFileName != null) {
+            numOfDocs++;
+            spanFileName = spanFileName.replaceAll(".txt", "");
+            spanFileName += ".objects";
+            Collection<Sentence> sents = JCasUtil.select(jCas, Sentence.class);
+            for (Sentence s : sents) {
+                final int[] position = {0};
+                Collection<SimplyWord> simplyWords = JCasUtil.selectCovered(SimplyWord.class, s);
+                String finalSpanFileName = spanFileName;
+                simplyWords.forEach(a -> {
+                    position[0]++;
+                    pos = position[0];
+                    text = a.getCoveredText();
+                    lemma = a.getLemma();
+                    posTag = a.getPosTag();
+                    suffixL1 = getSuffixWithLength(1, a.getCoveredText());
+                    suffixL2 = getSuffixWithLength(2, a.getCoveredText());
+                    suffixL3 = getSuffixWithLength(3, a.getCoveredText());
+                    affixL1 = getAffixWithLength(1, a.getCoveredText());
+                    affixL2 = getAffixWithLength(2, a.getCoveredText());
+                    affixL3 = getAffixWithLength(3, a.getCoveredText());
+                    left1Token = getKNearestNeighbourWords(simplyWords, a, 1, "<-");
+                    left2Tokens = getKNearestNeighbourWords(simplyWords, a, 2, "<-");
+                    left3Tokens = getKNearestNeighbourWords(simplyWords, a, 3, "<-");
+                    right1Token = getKNearestNeighbourWords(simplyWords, a, 1, "->");
+                    right2Tokens = getKNearestNeighbourWords(simplyWords, a, 2, "->");
+                    right3Tokens = getKNearestNeighbourWords(simplyWords, a, 3, "->");
+                    length = a.getCoveredText().length();
+                    try {
+                        label = getLabel(a, finalSpanFileName);
+                        ;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    zipToVector();
+
+                });
+                position[0] = 0;
+            }
         }
+        System.out.println("Num of docs processed: " + numOfDocs);
     }
 
     private String getSuffixWithLength(int length, String token) {
@@ -86,7 +135,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         if (length >= token.length()) {
             return token;
         } else {
-            result = token.substring(0, length - 1);
+            result = token.substring(0, length);
             return result;
         }
     }
@@ -129,8 +178,53 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         }
     }
 
-    private String getLabel(SimplyWord simplyWord) {
-        return "";
+    private String getLabel(SimplyWord simplyWord, String spanFileName) throws IOException {
+        BufferedReader reader = null;
+        final String[] label = {"none"};
+
+        File[] spansFiles = spanDirectory.listFiles();
+        for (File f : spansFiles) {
+            if (f.getName().equals(spanFileName))
+                reader = new BufferedReader(
+                        new InputStreamReader(
+                                new FileInputStream(f), Charset.forName("UTF-8")));
+        }
+        if (reader != null) {
+            reader.lines().forEach(a -> {
+                String[] labels = a.split(" ");
+                if (label[0].equals("none"))
+                    for (int i = labels.length - 1; i >= 0; i--) {
+                        if (!labels[i].equals("#")) {
+                            if (labels[i].equals(simplyWord.getCoveredText()))
+                                label[0] = labels[1];
+                        }
+                    }
+            });
+        }
+        return label[0];
+    }
+
+    private String getFileName(String docText) {
+        BufferedReader reader;
+        File[] spansFiles = textDirectory.listFiles();
+        for (File f : spansFiles) {
+            try {
+                reader = new BufferedReader(
+                        new InputStreamReader(
+                                new FileInputStream(f), Charset.forName("UTF-8")));
+                final String[] text = {""};
+                reader.lines().forEach(a -> {
+                    text[0] += a;
+                });
+                if (text[0].substring(0, 20).equals(docText.substring(0, 20))) {
+                    String name = f.getName();
+                    return name;
+                }
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+        }
+        return null;
     }
 
     private void zipToVector() {
@@ -151,7 +245,15 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         vector.setRight1Token(right1Token);
         vector.setRight2Tokens(right2Tokens);
         vector.setRight3Tokens(right3Tokens);
-        vectors.add(vector);
-        System.out.println(vector.toString());
+        vector.setLength(length);
+        vector.setLabel(label);
+        vectors.add(vector.toString());
+//        System.out.println(vector.toString());
+    }
+
+    private void showAllVectors() {
+        vectors.forEach(a -> {
+            System.out.println(a.toString());
+        });
     }
 }
