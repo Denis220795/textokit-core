@@ -42,6 +42,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     File textDirectory;
     File spanDirectory;
     private int numOfDocs = 0;
+    private int noneCounter = 0;
 
 
     @Override
@@ -90,6 +91,8 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
                     position[0]++;
                     pos = position[0];
                     text = a.getCoveredText();
+                    text = text.replaceAll("'", "");
+                    text = text.replaceAll(",", "");
                     lemma = a.getLemma();
                     posTag = a.getPosTag();
                     suffixL1 = getSuffixWithLength(1, a.getCoveredText());
@@ -111,8 +114,14 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                    if (label.equals("none")) {
+                        noneCounter++;
+                        if (noneCounter < 4000) {
+                            zipToVector();
+                            noneCounter++;
+                        }
+                    } else
                     zipToVector();
-
                 });
                 position[0] = 0;
             }
@@ -126,6 +135,8 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
             return token;
         } else {
             result = token.substring(token.length() - length);
+            result = result.replaceAll("'", "");
+            result = result.replaceAll("'", "");
             return result;
         }
     }
@@ -136,6 +147,8 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
             return token;
         } else {
             result = token.substring(0, length);
+            result = result.replaceAll("'", "");
+            result = result.replaceAll("'", "");
             return result;
         }
     }
