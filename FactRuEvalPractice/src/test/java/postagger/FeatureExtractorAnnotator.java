@@ -3,7 +3,6 @@ package postagger;
 import com.textocat.textokit.morph.fs.SimplyWord;
 import com.textocat.textokit.segmentation.fstype.Sentence;
 import ml.weka.CharacteristicVector;
-import org.apache.commons.lang3.text.StrBuilder;
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_component.JCasAnnotator_ImplBase;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -16,7 +15,6 @@ import java.io.*;
 import java.lang.reflect.Field;
 import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -40,10 +38,6 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     String label;
     boolean isCW;
     boolean isNumeric;
-    String prevBilouLabel;
-    String nextBilouLabel;
-    String nextGrammems;
-    String prevGrammems;
     List<SimplyWord> left1Token;
     List<SimplyWord> left2Tokens;
     List<SimplyWord> left3Tokens;
@@ -59,11 +53,12 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         vectors = new ArrayList<>();
-        textDirectory = new File(SystemResources.resourcePath() + "/texts/");
-        objectsDirectory = new File(SystemResources.resourcePath() + "/objects/");
-        spansDirectory = new File(SystemResources.resourcePath() + "/spans");
+        textDirectory = new File(SystemResources.resourceDevSetPath() + "/texts/");
+        objectsDirectory = new File(SystemResources.resourceDevSetPath() + "/objects/");
+        spansDirectory = new File(SystemResources.resourceDevSetPath() + "/spans");
     }
 
+    // fill local grammar info
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
         File file = new File("D:\\vectors.arff");
@@ -74,6 +69,10 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
                             new FileOutputStream(file), Charset.forName("UTF-8")));
             BufferedWriter finalWriter = writer;
             modifyLabelsWithBILOU(vectors);
+            setNextGrammems(vectors);
+            setPrevGrammems(vectors);
+            setPrevBLabels(vectors);
+            setNextBLabels(vectors);
             writer.write("@relation ner");
             writer.newLine();
             writer.newLine();
@@ -118,6 +117,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         showAllVectors();
     }
 
+    // set word grammar info
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
         String txtFIleName = getFileName(jCas.getDocumentText());
@@ -156,7 +156,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
                     right3Tokens = getKNearestNeighbourWords(simplyWords, a, 3, "->");
                     length = a.getCoveredText().length();
                     isCW = isCapitalizedWord(a);
-
+                    isNumeric = isNumeric(a);
                     try {
                         label = getLabel(a, finalobjectFileName);
                     } catch (IOException e) {
@@ -313,6 +313,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         vector.setLength(length);
         vector.setLabel(label);
         vector.setIsCW(isCW);
+        vector.setNumeric(isNumeric);
         vectors.add(vector);
 //        System.out.println(">>>"+vector.toString());
     }
@@ -347,6 +348,30 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         String digitalRegEx = "[0-9]";
         Pattern patternDig = Pattern.compile(digitalRegEx);
         return patternDig.matcher(simplyWord.getCoveredText()).matches();
+    }
+
+    private void setPrevGrammems(ArrayList<CharacteristicVector> vectors) {
+        for (int i = 1; i < vectors.size(); i++) {
+            vectors.get(i).setprevGrammems(vectors.get(i - 1).getPosTag());
+        }
+    }
+
+    private void setNextGrammems(ArrayList<CharacteristicVector> vectors) {
+        for (int i = vectors.size() - 2; i > 0; i--) {
+            vectors.get(i).setNextGrammems(vectors.get(i + 1).getPosTag());
+        }
+    }
+
+    private void setPrevBLabels(ArrayList<CharacteristicVector> vectors) {
+        for (int i = 1; i < vectors.size(); i++) {
+            vectors.get(i).setPrevBilouLabel(vectors.get(i - 1).getBilouLabel());
+        }
+    }
+
+    private void setNextBLabels(ArrayList<CharacteristicVector> vectors) {
+        for (int i = vectors.size() - 2; i > 0; i--) {
+            vectors.get(i).setNextBilouLabel(vectors.get(i + 1).getBilouLabel());
+        }
     }
 
     private void modifyLabelsWithBILOU(ArrayList<CharacteristicVector> vectors) {
