@@ -7,27 +7,37 @@ import java.util.List;
 
 /**
  * Created by Денис on 18.07.2016.
+ * NOTE: all fields are public for using it in reflection Java API!!!
  */
 public class CharacteristicVector {
 
-    private String coveredText;
-    private String lemma;
-    private String posTag;
-    private int position;
-    private String suffixL1;
-    private String suffixL2;
-    private String suffixL3;
-    private String affixL1;
-    private String affixL2;
-    private String affixL3;
+    private int begin;
+    public String coveredText;
+    public String lemma;
+    public String posTag;
+    public int position;
+    public String suffixL1;
+    public String suffixL2;
+    public String suffixL3;
+    public String affixL1;
+    public String affixL2;
+    public String affixL3;
+    public String left1Token;
+    public String left2Tokens;
+    public String left3Tokens;
+    public String right1Token;
+    public String right2Tokens;
+    public String right3Tokens;
+    public int length;
+    public String bilouLabel;
     private String label;
-    private int length;
-    List<SimplyWord> left1Token;
-    List<SimplyWord> left2Tokens;
-    List<SimplyWord> left3Tokens;
-    List<SimplyWord> right1Token;
-    List<SimplyWord> right2Tokens;
-    List<SimplyWord> right3Tokens;
+    public boolean isCW;
+    public boolean isNumeric;
+    public String prevBilouLabel;
+    public String nextBilouLabel;
+    public String nextGrammems;
+    public String prevGrammems;
+
 
     public String getLabel() {
         return label;
@@ -125,68 +135,133 @@ public class CharacteristicVector {
         this.affixL3 = affixL3;
     }
 
-    public List<SimplyWord> getLeft1Token() {
+    public String getLeft1Token() {
         return left1Token;
     }
 
-    public void setLeft1Token(List<SimplyWord> left1Token) {
+    public void setLeft1Token(String left1Token) {
         this.left1Token = left1Token;
     }
 
-    public List<SimplyWord> getLeft2Tokens() {
+    public String getLeft2Tokens() {
         return left2Tokens;
     }
 
-    public void setLeft2Tokens(List<SimplyWord> left2Tokens) {
+    public void setLeft2Tokens(String left2Tokens) {
         this.left2Tokens = left2Tokens;
     }
 
-    public List<SimplyWord> getLeft3Tokens() {
+    public String getLeft3Tokens() {
         return left3Tokens;
     }
 
-    public void setLeft3Tokens(List<SimplyWord> left3Tokens) {
+    public void setLeft3Tokens(String left3Tokens) {
         this.left3Tokens = left3Tokens;
     }
 
-    public List<SimplyWord> getRight1Token() {
+    public String getRight1Token() {
         return right1Token;
     }
 
-    public void setRight1Token(List<SimplyWord> right1Token) {
+    public void setRight1Token(String right1Token) {
         this.right1Token = right1Token;
     }
 
-    public List<SimplyWord> getRight2Tokens() {
+    public String getRight2Tokens() {
         return right2Tokens;
     }
 
-    public void setRight2Tokens(List<SimplyWord> right2Tokens) {
+    public void setRight2Tokens(String right2Tokens) {
         this.right2Tokens = right2Tokens;
     }
 
-    public List<SimplyWord> getRight3Tokens() {
+    public String getRight3Tokens() {
         return right3Tokens;
     }
 
-    public void setRight3Tokens(List<SimplyWord> right3Tokens) {
+    public void setRight3Tokens(String right3Tokens) {
         this.right3Tokens = right3Tokens;
+    }
+
+    public boolean getIsCW() {
+        return isCW;
+    }
+
+    public void setIsCW(boolean isCW) {
+        this.isCW = isCW;
+    }
+
+    public boolean isCW() {
+        return isCW;
+    }
+
+    public void setCW(boolean CW) {
+        isCW = CW;
+    }
+
+    public boolean isNumeric() {
+        return isNumeric;
+    }
+
+    public void setNumeric(boolean numeric) {
+        isNumeric = numeric;
+    }
+
+    public String getPrevBilouLabel() {
+        return prevBilouLabel;
+    }
+
+    public void setPrevBilouLabel(String prevBilouLabel) {
+        this.prevBilouLabel = prevBilouLabel;
+    }
+
+    public String getNextBilouLabel() {
+        return nextBilouLabel;
+    }
+
+    public void setNextBilouLabel(String nextBilouLabel) {
+        this.nextBilouLabel = nextBilouLabel;
+    }
+
+    public String getprevGrammems() {
+        return prevGrammems;
+    }
+
+    public void setprevGrammems(String prevGrammems) {
+        this.prevGrammems = prevGrammems;
+    }
+
+    public String getNextGrammems() {
+        return nextGrammems;
+    }
+
+    public void setNextGrammems(String nextGrammems) {
+        this.nextGrammems = nextGrammems;
     }
 
     @Override
     public String toString() {
         return "'" + coveredText + "'" + "," + "'" + lemma + "'" + "," + "'" + posTag + "'" + "," + position + "," +
                 suffixL1 + "," + suffixL2 + "," + suffixL3 + "," + affixL1 + "," + affixL2 + "," + affixL3 + "," +
-                "'" + mkStringFromList(left1Token) + "'" + "," + "'" + mkStringFromList(left2Tokens) + "'" + ","
-                + "'" + mkStringFromList(left3Tokens) + "'" + "," + "'" + mkStringFromList(right1Token) + "'" + ","
-                + "'" + mkStringFromList(right2Tokens) + "'" + "," + "'" + mkStringFromList(right3Tokens) + "'" + ","
-                + length + "," + label;
+                "'" + left1Token + "'" + "," + "'" + left2Tokens + "'" + "," + "'" + left3Tokens + "'" + "," + "'" + right1Token + "'" + ","
+                + "'" + right2Tokens + "'" + "," + "'" + right3Tokens + "'" + "," + length + "," + bilouLabel + "," + isCW + "," + isNumeric
+                + "," + "'" + prevBilouLabel + "'" + "," + "'" + nextBilouLabel + "'" + "," + "'" + nextGrammems + "'" +
+                "," + "'" + prevGrammems + "'";
     }
 
-    private String mkStringFromList(List<SimplyWord> words) {
-        String result = "";
-        for (SimplyWord sw : words)
-            result += sw.getCoveredText() + " ";
-        return result;
+    public String getBilouLabel() {
+        return bilouLabel;
+    }
+
+    public void setBilouLabel(String bilouLabel) {
+        this.bilouLabel = bilouLabel;
+    }
+
+    public int getBegin() {
+        return begin;
+    }
+
+    public void setBegin(int begin) {
+        this.begin = begin;
     }
 }
