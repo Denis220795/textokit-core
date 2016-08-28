@@ -3,6 +3,7 @@ package ml.weka;
 import com.textocat.textokit.commons.io.StreamGobblerBase;
 import com.textocat.textokit.morph.fs.SimplyWord;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
@@ -241,11 +242,18 @@ public class CharacteristicVector {
 
     @Override
     public String toString() {
-        return "'" + coveredText + "'" + "," + "'" + lemma + "'" + "," + "'" + posTag + "'" + "," + position + "," +
-                suffixL1 + "," + suffixL2 + "," + suffixL3 + "," + affixL1 + "," + affixL2 + "," + affixL3 + "," +
-                "'" + left1Token + "'" + "," + "'" + left2Tokens + "'" + "," + "'" + left3Tokens + "'" + "," + "'" + right1Token + "'" + ","
-                + "'" + right2Tokens + "'" + "," + "'" + right3Tokens + "'" + "," + length + "," + isCW + "," + isNumeric
-                + "," + "'" + nextGrammems + "'" + "," + "'" + prevGrammems + "'" + "," + bilouLabel;
+        String result = "";
+        Class vector = this.getClass();
+        Field[] publicFields = vector.getFields();
+        for (Field field : publicFields) {
+            try {
+                result += "'" + String.valueOf(field.get(this)) + "'" + ",";
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        }
+        result += "'" + bilouLabel + "'";
+        return result;
     }
 
     public String getBilouLabel() {

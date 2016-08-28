@@ -65,8 +65,6 @@ public class ArffWriter {
                     e.printStackTrace();
                 }
             });
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
