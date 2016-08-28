@@ -9,13 +9,14 @@ import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import utils.extractors.FeatureExtractor;
+import utils.io.ArffWriter;
 import utils.io.SystemResources;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.nio.charset.Charset;
 import java.util.*;
-import java.util.regex.Pattern;
+
+import static utils.extractors.FeatureExtractor.*;
 
 /**
  * Created by Денис on 07.04.2016.
@@ -61,66 +62,19 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     // fill local grammar info
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
+        ArffWriter arffWriter = new ArffWriter();
         File file = new File("D:\\vectors.arff");
-        BufferedWriter writer = null;
         try {
-            writer = new BufferedWriter(
-                    new OutputStreamWriter(
-                            new FileOutputStream(file), Charset.forName("UTF-8")));
-            BufferedWriter finalWriter = writer;
-            modifyLabelsWithBILOU(vectors);
-            setNextGrammems(vectors);
-            setPrevGrammems(vectors);
-            setPrevBLabels(vectors);
-            setNextBLabels(vectors);
-            writer.write("@relation ner");
-            writer.newLine();
-            writer.newLine();
-
-            // with java reflection
-            CharacteristicVector temp = new CharacteristicVector();
-            Class vector = temp.getClass();
-            Field[] publicFields = vector.getFields();
-            for (Field field : publicFields) {
-                writer.write("@attribute " + field.getName() + " string");
-                writer.newLine();
-            }
-            writer.newLine();
-            writer.write("@attribute class " +
-                    "{'O', 'B_Person', 'I_Person', 'L_Person', 'U_Person', 'B_Location', 'I_Location', 'L_Location', " +
-                    "'U_Location', 'B_Org', 'I_Org', 'L_Org', 'U_Org', 'B_LocOrg', 'I_LocOrg', 'L_LocOrg', 'U_LocOrg', " +
-                    "'B_Project', 'I_Project', 'L_Project'}");
-            writer.newLine();
-            writer.newLine();
-            writer.write("@data");
-            writer.newLine();
-            vectors.forEach(a -> {
-                try {
-                    if (!a.getBilouLabel().equals("O")) {
-                        finalWriter.write(a.toString());
-                        finalWriter.newLine();
-                    } else {
-                        if (Math.random() > 0.8) {
-                            finalWriter.write(a.toString());
-                            finalWriter.newLine();
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
+            arffWriter.writeVectorsToFile(vectors, file);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
-        showAllVectors();
     }
 
     // set word grammar info
     @Override
     public void process(JCas jCas) throws AnalysisEngineProcessException {
-        String txtFIleName = getFileName(jCas.getDocumentText());
+        String txtFIleName = FeatureExtractor.getFileName(jCas.getDocumentText(), textDirectory);
         String objectFileName;
         String spanFileName = null;
         if (txtFIleName != null) {
@@ -132,7 +86,6 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
             for (Sentence s : sents) {
                 final int[] position = {0};
                 Collection<SimplyWord> simplyWords = JCasUtil.selectCovered(SimplyWord.class, s);
-                String finalobjectFileName = objectFileName;
                 simplyWords.forEach(a -> {
                     position[0]++;
                     pos = position[0];
@@ -158,7 +111,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
                     isCW = isCapitalizedWord(a);
                     isNumeric = isNumeric(a);
                     try {
-                        label = getLabel(a, finalobjectFileName);
+                        label = getLabel(a, objectFileName, objectsDirectory);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -175,120 +128,6 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
             }
         }
         System.out.println("Num of docs processed: " + numOfDocs);
-    }
-
-    private String getSuffixWithLength(int length, String token) {
-        String result;
-        if (length >= token.length()) {
-            return token;
-        } else {
-            result = token.substring(token.length() - length);
-            result = result.replaceAll("'", "");
-            result = result.replaceAll("'", "");
-            return result;
-        }
-    }
-
-    private String getAffixWithLength(int length, String token) {
-        String result;
-        if (length >= token.length()) {
-            return token;
-        } else {
-            result = token.substring(0, length);
-            result = result.replaceAll("'", "");
-            result = result.replaceAll("'", "");
-            return result;
-        }
-    }
-
-    private List<SimplyWord> getKNearestNeighbourWords(Collection<SimplyWord> simplyWords, SimplyWord word, int k, String direction) {
-        List words = (List) simplyWords;
-        ListIterator<SimplyWord> iterator = words.listIterator();
-        int index = words.indexOf(word);
-        for (int j = 0; j <= index; j++)
-            iterator.next();
-
-        List<SimplyWord> neighbours = new ArrayList<>();
-        SimplyWord temp;
-        if (direction.equals("->")) {
-            for (int i = 0; i < k; i++) {
-                if (iterator.hasNext()) {
-                    temp = iterator.next();
-                    neighbours.add(temp);
-                } else return neighbours;
-            }
-            return neighbours;
-        } else {
-            if (direction.equals("<-")) {
-                if (iterator.hasPrevious())
-                    iterator.previous();
-                for (int i = 0; i < k; i++) {
-                    if (iterator.hasPrevious()) {
-                        temp = iterator.previous();
-                        neighbours.add(temp);
-                    } else {
-                        Collections.reverse(neighbours);
-                        return neighbours;
-                    }
-                }
-                Collections.reverse(neighbours);
-                return neighbours;
-            } else {
-                return neighbours;
-            }
-        }
-    }
-
-    private String getLabel(SimplyWord simplyWord, String objectFileName) throws IOException {
-        BufferedReader objectsReader = null;
-
-        final String[] label = {"none"};
-
-        File[] objectsFiles = objectsDirectory.listFiles();
-
-        for (File f : objectsFiles) {
-            if (f.getName().equals(objectFileName))
-                objectsReader = new BufferedReader(
-                        new InputStreamReader(
-                                new FileInputStream(f), Charset.forName("UTF-8")));
-        }
-
-        if (objectsReader != null) {
-            objectsReader.lines().forEach(a -> {
-                String[] labels = a.split(" ");
-                if (label[0].equals("none"))
-                    for (int i = labels.length - 1; i >= 0; i--) {
-                        if (!labels[i].equals("#")) {
-                            if (labels[i].equals(simplyWord.getCoveredText()))
-                                label[0] = labels[1];
-                        }
-                    }
-            });
-        }
-        return label[0];
-    }
-
-    private String getFileName(String docText) {
-        BufferedReader reader;
-        File[] spansFiles = textDirectory.listFiles();
-        for (File f : spansFiles) {
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(
-                                new FileInputStream(f), Charset.forName("UTF-8")));
-                final String[] text = {""};
-                reader.lines().forEach(a -> {
-                    text[0] += a;
-                });
-                if (text[0].substring(0, 20).equals(docText.substring(0, 20))) {
-                    String name = f.getName();
-                    return name;
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }
-        return null;
     }
 
     private void zipToVector() {
@@ -316,95 +155,5 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
         vector.setNumeric(isNumeric);
         vectors.add(vector);
 //        System.out.println(">>>"+vector.toString());
-    }
-
-    private void showAllVectors() {
-        for (CharacteristicVector vector : vectors) {
-            System.out.println(vector.toString());
-        }
-    }
-
-    private String mkStringFromList(List<SimplyWord> words) {
-        String result = "";
-        for (SimplyWord sw : words)
-            result += sw.getCoveredText() + " ";
-        return result;
-    }
-
-    private boolean isCapitalizedWord(SimplyWord simplyWord) {
-        String rusRegEx = "[А-Я]";
-        String engRegEx = "[A-Z]";
-        Pattern patternRus = Pattern.compile(rusRegEx);
-        Pattern patternEng = Pattern.compile(engRegEx);
-        boolean result;
-        result = patternRus.matcher(new String(String.valueOf(simplyWord.getCoveredText().charAt(0)))).matches();
-        if (!result) {
-            result = patternEng.matcher(new String(String.valueOf(simplyWord.getCoveredText().charAt(0)))).matches();
-        }
-        return result;
-    }
-
-    private boolean isNumeric(SimplyWord simplyWord) {
-        String digitalRegEx = "[0-9]";
-        Pattern patternDig = Pattern.compile(digitalRegEx);
-        return patternDig.matcher(simplyWord.getCoveredText()).matches();
-    }
-
-    private void setPrevGrammems(ArrayList<CharacteristicVector> vectors) {
-        for (int i = 1; i < vectors.size(); i++) {
-            vectors.get(i).setprevGrammems(vectors.get(i - 1).getPosTag());
-        }
-    }
-
-    private void setNextGrammems(ArrayList<CharacteristicVector> vectors) {
-        for (int i = vectors.size() - 2; i > 0; i--) {
-            vectors.get(i).setNextGrammems(vectors.get(i + 1).getPosTag());
-        }
-    }
-
-    private void setPrevBLabels(ArrayList<CharacteristicVector> vectors) {
-        for (int i = 1; i < vectors.size(); i++) {
-            vectors.get(i).setPrevBilouLabel(vectors.get(i - 1).getBilouLabel());
-        }
-    }
-
-    private void setNextBLabels(ArrayList<CharacteristicVector> vectors) {
-        for (int i = vectors.size() - 2; i > 0; i--) {
-            vectors.get(i).setNextBilouLabel(vectors.get(i + 1).getBilouLabel());
-        }
-    }
-
-    private void modifyLabelsWithBILOU(ArrayList<CharacteristicVector> vectors) {
-        for (int i = 0; i < vectors.size(); i++) {
-            // choose only ner tokens, miss none
-            if (!vectors.get(i).getLabel().equals("none")) {
-                // see only not first and end tokens
-                if (i != 0 && i != vectors.size() - 1) {
-                    CharacteristicVector currentVector = vectors.get(i);
-                    CharacteristicVector previousVector = vectors.get(i - 1);
-                    CharacteristicVector nextVector = vectors.get(i + 1);
-                    // atomic anno
-                    if (!nextVector.getLabel().equals(currentVector.getLabel()) && !previousVector.getLabel().equals(currentVector.getLabel()))
-                        currentVector.setBilouLabel("U_" + currentVector.getLabel());
-                    else {
-                        // begin anno
-                        if (nextVector.getLabel().equals(vectors.get(i).getLabel()) && !previousVector.getLabel().equals(vectors.get(i).getLabel()))
-                            vectors.get(i).setBilouLabel("B_" + vectors.get(i).getLabel());
-                        else {
-                            // end anno
-                            if (!nextVector.getLabel().equals(vectors.get(i).getLabel()) && previousVector.getLabel().equals(vectors.get(i).getLabel()))
-                                vectors.get(i).setBilouLabel("L_" + vectors.get(i).getLabel());
-                            else {
-                                // inside anno
-                                if (nextVector.getLabel().equals(vectors.get(i).getLabel()) && previousVector.getLabel().equals(vectors.get(i).getLabel()))
-                                    vectors.get(i).setBilouLabel("I_" + vectors.get(i).getLabel());
-                            }
-                        }
-                    }
-                }
-            } else {
-                vectors.get(i).setBilouLabel("O");
-            }
-        }
     }
 }

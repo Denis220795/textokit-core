@@ -29,12 +29,12 @@ public class CharacteristicVector {
     public String right2Tokens;
     public String right3Tokens;
     public int length;
-    public String bilouLabel;
+    private String bilouLabel;
     private String label;
     public boolean isCW;
     public boolean isNumeric;
-    public String prevBilouLabel;
-    public String nextBilouLabel;
+    private String prevBilouLabel;
+    private String nextBilouLabel;
     public String nextGrammems;
     public String prevGrammems;
 
@@ -244,9 +244,8 @@ public class CharacteristicVector {
         return "'" + coveredText + "'" + "," + "'" + lemma + "'" + "," + "'" + posTag + "'" + "," + position + "," +
                 suffixL1 + "," + suffixL2 + "," + suffixL3 + "," + affixL1 + "," + affixL2 + "," + affixL3 + "," +
                 "'" + left1Token + "'" + "," + "'" + left2Tokens + "'" + "," + "'" + left3Tokens + "'" + "," + "'" + right1Token + "'" + ","
-                + "'" + right2Tokens + "'" + "," + "'" + right3Tokens + "'" + "," + length + "," + bilouLabel + "," + isCW + "," + isNumeric
-                + "," + "'" + prevBilouLabel + "'" + "," + "'" + nextBilouLabel + "'" + "," + "'" + nextGrammems + "'" +
-                "," + "'" + prevGrammems + "'";
+                + "'" + right2Tokens + "'" + "," + "'" + right3Tokens + "'" + "," + length + "," + isCW + "," + isNumeric
+                + "," + "'" + nextGrammems + "'" + "," + "'" + prevGrammems + "'" + "," + bilouLabel;
     }
 
     public String getBilouLabel() {
