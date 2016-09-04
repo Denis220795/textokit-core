@@ -41,7 +41,7 @@ public class ModelTestAnnotator {
 
         AnalysisEngineDescription aePOSTagger = AnalysisEngineFactory.createEngineDescription(PosTaggerAPI.AE_POSTAGGER);
 
-        AnalysisEngineDescription posa = AnalysisEngineFactory.createEngineDescription(FeatureExtractorAnnotator.class);
+        AnalysisEngineDescription posa = AnalysisEngineFactory.createEngineDescription(EvalauationAnnotator.class);
 
         AnalysisEngineDescription aeDesc = AnalysisEngineFactory.createEngineDescription(aeTokenizer, aeSentS, aePOSTagger, aeLemmaizer, aeSimpWord, posa);
 

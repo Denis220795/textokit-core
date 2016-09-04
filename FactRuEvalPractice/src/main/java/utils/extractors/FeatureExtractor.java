@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
  * Created by Денис on 28.08.2016.
  */
 public class FeatureExtractor {
+
     private FeatureExtractor() {
     }
 
@@ -45,7 +46,6 @@ public class FeatureExtractor {
         int index = words.indexOf(word);
         for (int j = 0; j <= index; j++)
             iterator.next();
-
         List<SimplyWord> neighbours = new ArrayList<>();
         SimplyWord temp;
         if (direction.equals("->")) {
@@ -79,8 +79,10 @@ public class FeatureExtractor {
 
     public static String mkStringFromList(List<SimplyWord> words) {
         String result = "";
-        for (SimplyWord sw : words)
-            result += sw.getCoveredText() + " ";
+        for (SimplyWord sw : words) {
+            result += sw.getLemma() != null ? sw.getLemma().replaceAll("'", "") : sw.getCoveredText().replaceAll("'", "");
+            result += " ";
+        }
         return result;
     }
 
@@ -98,7 +100,7 @@ public class FeatureExtractor {
     }
 
     public static boolean isNumeric(SimplyWord simplyWord) {
-        String digitalRegEx = "[0-9]";
+        String digitalRegEx = "[0-9]+";
         Pattern patternDig = Pattern.compile(digitalRegEx);
         return patternDig.matcher(simplyWord.getCoveredText()).matches();
     }
@@ -106,7 +108,7 @@ public class FeatureExtractor {
     public static void modifyLabelsWithBILOU(ArrayList<CharacteristicVector> vectors) {
         for (int i = 0; i < vectors.size(); i++) {
             // choose only ner tokens, miss none
-            if (!vectors.get(i).getLabel().equals("none")) {
+            if (!"none".equals(vectors.get(i).getLabel())) {
                 // see only not first and end tokens
                 if (i != 0 && i != vectors.size() - 1) {
                     CharacteristicVector currentVector = vectors.get(i);
@@ -135,6 +137,10 @@ public class FeatureExtractor {
                 vectors.get(i).setBilouLabel("O");
             }
         }
+    }
+
+    public static void modifyLabelsWithQuestion(ArrayList<CharacteristicVector> vectors) {
+        vectors.forEach(f -> f.setBilouLabel("?"));
     }
 
     public static void setPrevGrammems(ArrayList<CharacteristicVector> vectors) {
@@ -201,4 +207,9 @@ public class FeatureExtractor {
         return null;
     }
 
+    public static boolean isNumeric(String word) {
+        String digitalRegEx = "[0-9]+";
+        Pattern patternDig = Pattern.compile(digitalRegEx);
+        return patternDig.matcher(word).matches();
+    }
 }

@@ -1,4 +1,4 @@
-package postagger;
+package model;
 
 import com.textocat.textokit.morph.fs.SimplyWord;
 import com.textocat.textokit.segmentation.fstype.Sentence;
@@ -13,60 +13,61 @@ import utils.extractors.FeatureExtractor;
 import utils.io.ArffWriter;
 import utils.io.SystemResources;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static utils.extractors.FeatureExtractor.*;
+import static utils.extractors.FeatureExtractor.mkStringFromList;
 
 /**
- * Created by Денис on 07.04.2016.
+ * Created by Денис on 30.08.2016.
  */
-public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
+public class EvalauationAnnotator extends JCasAnnotator_ImplBase {
 
     private ArrayList<CharacteristicVector> vectors;
-    private int pos;
-    private int length;
-    private int begin;
-    private String text;
-    private String lemma;
-    private String posTag;
-    private String suffixL1;
-    private String suffixL2;
-    private String suffixL3;
-    private String affixL1;
-    private String affixL2;
-    private String affixL3;
-    private String label;
-    private boolean isCW;
-    private boolean isNumeric;
-    private List<SimplyWord> left1Token;
-    private List<SimplyWord> left2Tokens;
-    private List<SimplyWord> left3Tokens;
-    private List<SimplyWord> right1Token;
-    private List<SimplyWord> right2Tokens;
-    private List<SimplyWord> right3Tokens;
-    private File textDirectory;
-    private File objectsDirectory;
-    private File spansDirectory;
+    int pos;
+    int length;
+    int begin;
+    String text;
+    String lemma;
+    String posTag;
+    String suffixL1;
+    String suffixL2;
+    String suffixL3;
+    String affixL1;
+    String affixL2;
+    String affixL3;
+    String label;
+    boolean isCW;
+    boolean isNumeric;
+    List<SimplyWord> left1Token;
+    List<SimplyWord> left2Tokens;
+    List<SimplyWord> left3Tokens;
+    List<SimplyWord> right1Token;
+    List<SimplyWord> right2Tokens;
+    List<SimplyWord> right3Tokens;
+    File textDirectory;
+    File objectsDirectory;
+    File spansDirectory;
     private int numOfDocs = 0;
-    private final String RESULT_FILE_NAME = "D:\\vectorsDev.arff";
 
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         vectors = new ArrayList<>();
-        textDirectory = new File(SystemResources.resourceDevSetPath() + "/texts/");
-        objectsDirectory = new File(SystemResources.resourceDevSetPath() + "/objects/");
-        spansDirectory = new File(SystemResources.resourceDevSetPath() + "/spans");
+        textDirectory = new File(SystemResources.resourceTestSetPath() + "/texts/");
+        objectsDirectory = new File(SystemResources.resourceTestSetPath() + "/objects/");
+        spansDirectory = new File(SystemResources.resourceTestSetPath() + "/spans");
     }
 
     // fill local grammar info
     @Override
     public void collectionProcessComplete() throws AnalysisEngineProcessException {
-        FeatureExtractor.modifyLabelsWithBILOU(vectors);
-        FeatureExtractor.setNextGrammems(vectors);
-        FeatureExtractor.setPrevGrammems(vectors);
-        File file = new File(RESULT_FILE_NAME);
+        File file = new File("D:\\vectorsTest.arff");
         ArffWriter arffWriter = new ArffWriter(file);
         try {
             arffWriter.writeVectorsToFile(vectors);
@@ -80,7 +81,7 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     public void process(JCas jCas) throws AnalysisEngineProcessException {
         String txtFIleName = FeatureExtractor.getFileName(jCas.getDocumentText(), textDirectory);
         String objectFileName;
-        String spanFileName;
+        String spanFileName = null;
         if (txtFIleName != null) {
             numOfDocs++;
             objectFileName = txtFIleName.replaceAll(".txt", ".objects");

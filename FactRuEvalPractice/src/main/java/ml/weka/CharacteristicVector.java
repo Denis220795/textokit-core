@@ -252,7 +252,7 @@ public class CharacteristicVector {
                 e.printStackTrace();
             }
         }
-        result += "'" + bilouLabel + "'";
+        result += bilouLabel;
         return result;
     }
 
