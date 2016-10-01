@@ -49,15 +49,15 @@ public class FeatureExtractorAnnotator extends JCasAnnotator_ImplBase {
     private File objectsDirectory;
     private File spansDirectory;
     private int numOfDocs = 0;
-    private final String RESULT_FILE_NAME = "D:\\vectorsDev.arff";
+    private final String RESULT_FILE_NAME = "D:\\vectorsTest.arff";
 
 
     @Override
     public void initialize(UimaContext aContext) throws ResourceInitializationException {
         vectors = new ArrayList<>();
-        textDirectory = new File(SystemResources.resourceDevSetPath() + "/texts/");
-        objectsDirectory = new File(SystemResources.resourceDevSetPath() + "/objects/");
-        spansDirectory = new File(SystemResources.resourceDevSetPath() + "/spans");
+        textDirectory = new File(SystemResources.resourceTestSetPath() + "/texts/");
+        objectsDirectory = new File(SystemResources.resourceTestSetPath() + "/objects/");
+        spansDirectory = new File(SystemResources.resourceTestSetPath() + "/spans");
     }
 
     // fill local grammar info

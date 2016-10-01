@@ -1,10 +1,7 @@
 package ml.weka;
 
-import com.textocat.textokit.commons.io.StreamGobblerBase;
-import com.textocat.textokit.morph.fs.SimplyWord;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
 /**
  * Created by Денис on 18.07.2016.
